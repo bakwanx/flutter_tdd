@@ -32,7 +32,7 @@ void main() {
     );
 
     // act
-    final result = await usecase(Params(tNumber));
+    final result = await usecase(Params(number: tNumber));
 
     // assert
     expect(result, Right(tNumberTrivia));
