@@ -1,14 +1,22 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_tdd/core/network/network_info.dart';
 import 'package:flutter_tdd/core/util/input_converter.dart';
+import 'package:flutter_tdd/features/number_trivia/data/datasources/number_trivia_local_data_source.dart';
+import 'package:flutter_tdd/features/number_trivia/data/datasources/number_trivia_remote_data_source.dart';
+import 'package:flutter_tdd/features/number_trivia/data/impl_repositories/number_trivia_repository_impl.dart';
+import 'package:flutter_tdd/features/number_trivia/domain/repositories/number_trivia_repository.dart';
 import 'package:flutter_tdd/features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'package:flutter_tdd/features/number_trivia/domain/usecases/get_random_number_trivia.dart';
 import 'package:flutter_tdd/features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 final sl = GetIt.instance;
 
-void init() {
+Future<void> init() async {
   // FEATURES - Number Trivia
-  // Bloc
+  // Bloc --- Kenapa BLOC pakai factory, karena kita harus instance setiap membuka bloc dan antisipasi dispose bloc untuk cleanup/close bloc dari stream
   sl.registerFactory(
     () => NumberTriviaBloc(
       getConcreteNumberTrivia: sl(),
@@ -19,8 +27,29 @@ void init() {
   // Use cases
   sl.registerLazySingleton(() => GetConcreteNumberTrivia(sl()));
   sl.registerLazySingleton(() => GetRandomNumberTrivia(sl()));
+  // Repository
+  sl.registerLazySingleton<NumberTriviaRepository>(
+    () => NumberTriviaRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  // Data source
+  sl.registerLazySingleton<NumberTriviaRemoteDataSource>(
+    () => NumberTriviaRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<NumberTriviaLocalDataSource>(
+    () => NumberTriviaLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
   // CORE
   sl.registerLazySingleton(() => InputConverter());
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
   // EXTERNAL
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => http.Client);
+  sl.registerLazySingleton(() => Connectivity());
 }
