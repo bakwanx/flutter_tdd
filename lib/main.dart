@@ -3,8 +3,9 @@ import 'package:flutter_tdd/features/number_trivia/presentation/pages/number_tri
 import 'injection_container.dart' as di;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

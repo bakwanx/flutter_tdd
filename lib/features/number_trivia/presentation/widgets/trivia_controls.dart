@@ -29,6 +29,7 @@ class _TriviaControlsState extends State<TriviaControls> {
             inputStr = value;
           },
           onSubmitted: (_) {
+
             dispatchConcrete();
           },
         ),
