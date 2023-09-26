@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_tdd/core/error/failures.dart';
 import 'package:flutter_tdd/core/usecases/usecase.dart';
@@ -53,7 +54,7 @@ void main() {
 
     test(
       'should call the InputConverter to validate and convert the string to an unsigned integer',
-          () async {
+      () async {
         // arrange
         setUpMockInputConverterSuccess();
         // act
@@ -66,7 +67,7 @@ void main() {
 
     test(
       'should emit [Error] when the input is invalid',
-          () async {
+      () async {
         // arrange
         when(mockInputConverter.stringToUnsignedInteger(any))
             .thenReturn(Left(InvalidInputFailure()));
@@ -83,7 +84,7 @@ void main() {
 
     test(
       'should get data from the concrete use case',
-          () async {
+      () async {
         // arrange
         setUpMockInputConverterSuccess();
         when(mockGetConcreteNumberTrivia(any))
@@ -93,12 +94,13 @@ void main() {
         await untilCalled(mockGetConcreteNumberTrivia(any));
         // assert
         verify(mockGetConcreteNumberTrivia(Params(number: tNumberParsed)));
+        expect(bloc.state, equals(Loading()));
       },
     );
 
     test(
       'should emit [Loading, Loaded] when data is gotten successfully',
-          () async {
+      () async {
         // arrange
         setUpMockInputConverterSuccess();
         when(mockGetConcreteNumberTrivia(any))
@@ -117,7 +119,7 @@ void main() {
 
     test(
       'should emit [Loading, Error] when getting data fails',
-          () async {
+      () async {
         // arrange
         setUpMockInputConverterSuccess();
         when(mockGetConcreteNumberTrivia(any))
@@ -136,7 +138,7 @@ void main() {
 
     test(
       'should emit [Loading, Error] with a proper message for the error when getting data fails',
-          () async {
+      () async {
         // arrange
         setUpMockInputConverterSuccess();
         when(mockGetConcreteNumberTrivia(any))
@@ -152,8 +154,6 @@ void main() {
         bloc.add(GetTriviaForConcreteNumber(tNumberString));
       },
     );
-
-
   });
 
   group("GetTriviaForRandomNumber", () {
@@ -166,7 +166,7 @@ void main() {
 
     test(
       'should get data from the random use case',
-          () async {
+      () async {
         // arrange
         when(mockGetRandomNumberTrivia(any))
             .thenAnswer((_) async => Right(tNumberTrivia));
@@ -180,7 +180,7 @@ void main() {
 
     test(
       'should emit [Loading, Loaded] when data is gotten successfully',
-          () async {
+      () async {
         // arrange
         when(mockGetRandomNumberTrivia(any))
             .thenAnswer((_) async => Right(tNumberTrivia));
@@ -198,7 +198,7 @@ void main() {
 
     test(
       'should emit [Loading, Error] when getting data fails',
-          () async {
+      () async {
         // arrange
         when(mockGetRandomNumberTrivia(any))
             .thenAnswer((_) async => Left(ServerFailure()));
@@ -216,7 +216,7 @@ void main() {
 
     test(
       'should emit [Loading, Error] with a proper message for the error when getting data fails',
-          () async {
+      () async {
         // arrange
         when(mockGetRandomNumberTrivia(any))
             .thenAnswer((_) async => Left(CacheFailure()));
