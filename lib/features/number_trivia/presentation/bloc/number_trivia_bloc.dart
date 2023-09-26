@@ -50,10 +50,10 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
       } else if (event is GetTriviaForRandomNumber) {
         emit(Loading());
         final failureOrTrivia = await getRandomNumberTrivia(NoParams());
-        // failureOrTrivia.fold(
-        //       (failure) => emit( Error(message: _mapFailureToMessage(failure))),
-        //       (trivia) => emit(Loaded(trivia: trivia)),
-        // );
+        failureOrTrivia.fold(
+              (failure) => emit( Error(message: _mapFailureToMessage(failure))),
+              (trivia) => emit(Loaded(trivia: trivia)),
+        );
       }
     });
 
